@@ -1,0 +1,6 @@
+Flask
+gunicorn
+supabase
+werkzeug
+itsdangerous
+flask-limiter
