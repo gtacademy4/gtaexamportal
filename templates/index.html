@@ -4624,6 +4624,42 @@ window.renderQuestionList = function(containerId, questions, title) {
         let existing = serverDB.chapters.find(c => c.category === cat && c.subject === subj && c.paper === paper);
         if(existing) { existing.topics.splice(idx, 1); await window.setDB('chapters', serverDB.chapters); window.loadSylChapters(); }
     }
+    async function saveLectureToDB() {
+    // UI থেকে ডেটা সংগ্রহ করা
+    const inputs = document.querySelectorAll('.editable-input');
+    const lectureData = {
+        subject: inputs[0].value,
+        topic: inputs[1].value,
+        lecture_no: inputs[2].value,
+        teacher: inputs[3].value,
+        sections: []
+    };
+    
+    // ডাইনামিক সেকশনগুলো লুপ করে সংগ্রহ করা
+    document.querySelectorAll('.section-box').forEach(box => {
+        const title = box.querySelector('.section-title input').value;
+        const content = box.querySelector('.section-content textarea').value;
+        lectureData.sections.push({ title, content });
+    });
+
+    // ব্যাকএন্ড API-তে পাঠানো
+    try {
+        const response = await fetch('/api/lectures/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: lectureData })
+        });
+        
+        const result = await response.json();
+        if(result.status === 'success') {
+            alert('দারুণ! লেকচার শিটটি ডেটাবেসে সেভ হয়েছে।');
+        } else {
+            alert('সমস্যা হয়েছে: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
