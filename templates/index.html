@@ -713,6 +713,10 @@
                 <div class="bottom-nav-text">Teacher Panel</div>
             </div>
         </div>
+            <!-- 🔹 Lecture Sheet Button 🔹 -->
+        <a href="/lecture-sheet" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 15px 20px; text-decoration: none; border-radius: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(37,99,235,0.2); font-size: 16px; gap: 10px;">
+            📚 Masterclass Lecture Sheets
+        </a>
             <!-- Progress Tracker -->
     <!-- Progress Tracker -->
             <div class="card">
@@ -2750,7 +2754,9 @@ window.verifyAndCompleteRegister = async function() {
                 <div class="dash-quick-icon" style="color: #10b981;">👨‍🏫</div><div class="bottom-nav-text">অন্যান্য শিক্ষক</div>
             </div>
         </div>`;
-
+        // 🔹 Lecture Sheet Button For Teachers 🔹
+        html += `<a href="/lecture-sheet" style="background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 15px 20px; text-decoration: none; border-radius: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(16,185,129,0.2); font-size: 16px; gap: 10px;">📚 Create / Edit Lecture Sheets</a>`;
+        
         html += `<div class="card" style="margin-top:20px; border-top:4px solid var(--secondary);"><h4 style="font-size:16px; margin-bottom:10px;">📈 All Student Submissions</h4><div class="table-responsive"><table><tr><th>Student Name</th><th>Exam Subject</th><th>Score</th><th>Action</th></tr>`;
         let recentRes = serverDB.results.slice().reverse().slice(0, 15);
         if(recentRes.length === 0) html += `<tr><td colspan="4" class="text-center">No submissions yet.</td></tr>`;
