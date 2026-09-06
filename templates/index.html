@@ -423,7 +423,7 @@
 <div id="app-header" class="app-header hidden">
     <div class="header-streak">🔥 <span id="header-streak-count">0</span></div>
     <div class="header-logo" style="display: flex; align-items: center; gap: 8px; font-size: 20px;">
-        <img src="/static/logo.png" alt="Logo" style="width: 32px; height: 32px; object-fit: cover; border-radius: 8px;">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width: 32px; height: 32px; object-fit: cover; border-radius: 8px;">
         GTA EXAM Portal
     </div>
     <div class="header-avatar" id="header-avatar-btn" onclick="openSettingsModal()">U</div>
@@ -455,7 +455,7 @@
     <div id="view-auth">
 
 <div class="header-brand" style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
-            <img src="/static/logo.png" alt="Logo" style="width: 85px; height: 85px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width: 85px; height: 85px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
             <h1 style="font-size: 32px; margin-bottom: 5px;">GTA EXAM Portal</h1>
             <p class="tagline">Masterclass App</p>
             <p class="sub-tag">For SSC, HSC & Admission</p>
