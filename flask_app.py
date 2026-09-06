@@ -386,7 +386,9 @@ def format_user_data(user):
 def logout():
     session.clear()
     return jsonify({"status": "success"})
-
+@app.route('/lecture-sheet')
+def lecture_sheet():
+    return render_template('lecture_sheet.html')
 @app.route('/api/me', methods=['GET'])
 def get_me():
     if 'user_id' in session:
