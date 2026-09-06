@@ -22,6 +22,7 @@
         .toolbar { max-width: 900px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; }
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
         .btn-edit { background: #059669; }
+        .btn-save { background: #2563eb; } /* Blue for Save */
         .btn-delete { background: #dc2626; }
         .btn-download { background: var(--secondary); }
         .btn:hover { opacity: 0.8; }
@@ -63,13 +64,11 @@
 </head>
 <body>
 
-    <!-- Control Panel (Visible based on User Role via Flask Jinja) -->
+    <!-- Control Panel (Toolbar) -->
     <div class="toolbar">
-        <!-- Add Jinja conditions here: if current_user.role in ['admin', 'teacher'] -->
         <button class="btn btn-edit" onclick="toggleEditMode()">✎ Add / Edit Sheet</button>
-        <!-- if current_user.role == 'admin' -->
+        <button class="btn btn-save" onclick="saveLectureToDB()">💾 Save to Database</button>
         <button class="btn btn-delete">🗑️ Delete</button>
-        <!-- For everyone -->
         <button class="btn btn-download" onclick="downloadPDF()">⬇️ Download PDF</button>
     </div>
 
@@ -191,6 +190,45 @@
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
+        }
+
+        // Save Lecture to Supabase Database
+        async function saveLectureToDB() {
+            // UI থেকে ডেটা সংগ্রহ করা
+            const inputs = document.querySelectorAll('.editable-input');
+            const lectureData = {
+                subject: inputs[0].value,
+                topic: inputs[1].value,
+                lecture_no: inputs[2].value,
+                teacher: inputs[3].value,
+                sections: []
+            };
+            
+            // ডাইনামিক সেকশনগুলো লুপ করে সংগ্রহ করা
+            document.querySelectorAll('.section-box').forEach(box => {
+                const title = box.querySelector('.section-title input').value;
+                const content = box.querySelector('.section-content textarea').value;
+                lectureData.sections.push({ title, content });
+            });
+
+            // ব্যাকএন্ড API-তে পাঠানো
+            try {
+                const response = await fetch('/api/lectures/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: lectureData })
+                });
+                
+                const result = await response.json();
+                if(result.status === 'success') {
+                    alert('দারুণ! লেকচার শিটটি ডেটাবেসে সেভ হয়েছে।');
+                } else {
+                    alert('সমস্যা হয়েছে: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('সার্ভারের সাথে কানেক্ট করা যাচ্ছে না!');
+            }
         }
     </script>
 </body>
