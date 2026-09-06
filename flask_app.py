@@ -10,6 +10,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+import uuid
 
 from supabase import create_client, Client
 
@@ -205,6 +206,50 @@ def send_otp():
         return jsonify({"status": "success", "message": "আপনার ইমেইলে ভেরিফিকেশন ওটিপি পাঠানো হয়েছে! (মেয়াদ: ১০ মিনিট)"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+# ১. লেকচার ফেচ করা (সবার জন্য)
+@app.route('/api/lectures', methods=['GET'])
+def get_lectures():
+    try:
+        rows = supabase.table('lecture_sheets').select('data').execute().data
+        lectures = [row['data'] for row in rows if 'data' in row]
+        return jsonify({'status': 'success', 'data': lectures})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+# ২. লেকচার সেভ বা আপডেট করা (Teacher/Admin)
+@app.route('/api/lectures/save', methods=['POST'])
+def save_lecture():
+    req = request.json
+    lecture_data = req.get('data')
+    
+    if not lecture_data:
+        return jsonify({'status': 'error', 'message': 'Invalid data'})
+        
+    try:
+        # নতুন আইডি তৈরি (যদি না থাকে)
+        lecture_id = lecture_data.get('id', str(uuid.uuid4()))
+        lecture_data['id'] = lecture_id
+        
+        # Supabase-এ JSON ডেটা সেভ করা (Upsert)
+        supabase.table('lecture_sheets').upsert({
+            'id': lecture_id,
+            'data': lecture_data
+        }).execute()
+        
+        return jsonify({'status': 'success', 'message': 'Lecture saved successfully!', 'id': lecture_id})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+# ৩. লেকচার ডিলিট করা (Only Admin)
+@app.route('/api/lectures/delete/<lecture_id>', methods=['DELETE'])
+def delete_lecture(lecture_id):
+    try:
+        # এখানে সেশন চেক করে নিশ্চিত করতে পারেন যে ইউজার অ্যাডমিন কিনা
+        supabase.table('lecture_sheets').delete().eq('id', lecture_id).execute()
+        return jsonify({'status': 'success', 'message': 'Lecture deleted'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
 
 @app.route('/api/verify_and_register', methods=['POST'])
 def verify_and_register():
