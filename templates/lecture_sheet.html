@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Sheet - Goal Thinking Academy</title>
+    <!-- MathJax for LaTeX Support -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- html2pdf for PDF Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Deep Blue */
+            --secondary: #d97706; /* Elegant Gold */
+            --bg-color: #f3f4f6;
+            --paper: #ffffff;
+            --text-dark: #1f2937;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-color); color: var(--text-dark); padding: 20px; }
+        .toolbar { max-width: 900px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-edit { background: #059669; }
+        .btn-delete { background: #dc2626; }
+        .btn-download { background: var(--secondary); }
+        .btn:hover { opacity: 0.8; }
+        
+        /* A4 Paper Style Container */
+        .lecture-container {
+            max-width: 900px; margin: 0 auto; background: var(--paper); padding: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; border-top: 8px solid var(--primary);
+        }
+        
+        /* Header Section */
+        .header-section { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 20px; }
+        .logo-box img { max-width: 120px; height: auto; }
+        .academy-title { text-align: center; flex-grow: 1; }
+        .academy-title h1 { color: var(--primary); margin: 0; font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .academy-title h3 { color: var(--secondary); margin: 5px 0 0 0; font-size: 18px; }
+        
+        /* Meta Information (Subject, Topic, etc.) */
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 30px; font-size: 16px; border-left: 4px solid var(--secondary); }
+        .meta-item strong { color: var(--primary); }
+        
+        /* Dynamic Sections (History, Basic, Application, etc.) */
+        .section-box { margin-bottom: 30px; }
+        .section-title { 
+            background: var(--primary); color: white; display: inline-block; padding: 8px 20px; 
+            border-radius: 5px; font-size: 18px; margin-bottom: 15px; border-bottom: 3px solid var(--secondary);
+        }
+        .section-content { background: #ffffff; border: 1px solid #e5e7eb; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); line-height: 1.6; }
+        .section-content img { max-width: 100%; border-radius: 5px; margin: 10px 0; }
+        
+        /* Input formats for Edit Mode (Hidden by default) */
+        .edit-mode .readonly-text { display: none; }
+        .edit-mode .editable-input { display: block; width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .editable-input { display: none; }
+        
+        .add-section-btn { background: var(--primary); color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px; display: none; }
+        .edit-mode .add-section-btn { display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <!-- Control Panel (Visible based on User Role via Flask Jinja) -->
+    <div class="toolbar">
+        <!-- Add Jinja conditions here: if current_user.role in ['admin', 'teacher'] -->
+        <button class="btn btn-edit" onclick="toggleEditMode()">✎ Add / Edit Sheet</button>
+        <!-- if current_user.role == 'admin' -->
+        <button class="btn btn-delete">🗑️ Delete</button>
+        <!-- For everyone -->
+        <button class="btn btn-download" onclick="downloadPDF()">⬇️ Download PDF</button>
+    </div>
+
+    <!-- Main Lecture Sheet Area -->
+    <div class="lecture-container" id="lecture-paper">
+        <!-- Header -->
+        <div class="header-section">
+            <div class="logo-box">
+                <img src="{{ url_for('static', filename='logo1.png') }}" alt="Logo">
+            </div>
+            <div class="academy-title">
+                <h1>Goal Thinking Academy</h1>
+                <h3>Exclusive Masterclass Lecture Sheet</h3>
+            </div>
+            <div style="width: 120px;"></div> <!-- Spacer for flex balance -->
+        </div>
+
+        <!-- Meta Data -->
+        <div class="meta-grid">
+            <div class="meta-item"><strong>Subject:</strong> <span class="readonly-text">Physics (Higher Secondary)</span><input type="text" class="editable-input" value="Physics (Higher Secondary)"></div>
+            <div class="meta-item"><strong>Topic:</strong> <span class="readonly-text">Thermodynamics (তাপগতিবিদ্যা)</span><input type="text" class="editable-input" value="Thermodynamics (তাপগতিবিদ্যা)"></div>
+            <div class="meta-item"><strong>Lecture No:</strong> <span class="readonly-text">01</span><input type="text" class="editable-input" value="01"></div>
+            <div class="meta-item"><strong>Teacher's Name:</strong> <span class="readonly-text">Engr. Abir Hasan</span><input type="text" class="editable-input" value="Engr. Abir Hasan"></div>
+        </div>
+
+        <!-- Dynamic Content Wrapper -->
+        <div id="dynamic-sections">
+            <!-- Section 1: History -->
+            <div class="section-box">
+                <div class="section-title"><span class="readonly-text">১. ইতিহাস (History)</span><input type="text" class="editable-input" value="১. ইতিহাস (History)"></div>
+                <div class="section-content">
+                    <p class="readonly-text">তাপগতিবিদ্যার ইতিহাস শুরু হয় ১৬৯৮ সালে টমাস সেভারির প্রথম বাষ্পীয় ইঞ্জিন আবিষ্কারের মাধ্যমে...</p>
+                    <textarea class="editable-input" rows="3">তাপগতিবিদ্যার ইতিহাস শুরু হয় ১৬৯৮ সালে টমাস সেভারির প্রথম বাষ্পীয় ইঞ্জিন আবিষ্কারের মাধ্যমে...</textarea>
+                </div>
+            </div>
+
+            <!-- Section 2: Basic -->
+            <div class="section-box">
+                <div class="section-title"><span class="readonly-text">২. মূল ধারণা (Basic Concept)</span><input type="text" class="editable-input" value="২. মূল ধারণা (Basic Concept)"></div>
+                <div class="section-content">
+                    <p class="readonly-text">তাপগতিবিদ্যার প্রথম সূত্র মূলত শক্তির নিত্যতা সূত্র। সমীকরণটি হলো: 
+                    <br><br> $$ dQ = dU + dW $$ <br>
+                    যেখানে, \(dQ\) = সরবরাহকৃত তাপ, \(dU\) = অভ্যন্তরীণ শক্তি বৃদ্ধি।
+                    </p>
+                    <textarea class="editable-input" rows="4">তাপগতিবিদ্যার প্রথম সূত্র মূলত শক্তির নিত্যতা সূত্র। সমীকরণটি হলো: $$ dQ = dU + dW $$</textarea>
+                </div>
+            </div>
+            
+            <!-- Section 3: Board Math -->
+            <div class="section-box">
+                <div class="section-title"><span class="readonly-text">৩. গাণিতিক সমস্যা (Board Questions)</span><input type="text" class="editable-input" value="৩. গাণিতিক সমস্যা (Board Questions)"></div>
+                <div class="section-content">
+                    <p class="readonly-text"><strong>ঢাকা বোর্ড ২০২৩:</strong> একটি সিস্টেমে 500J তাপ সরবরাহ করা হলো এবং সিস্টেমটি 200J কাজ সম্পন্ন করল। অভ্যন্তরীণ শক্তির পরিবর্তন কত?</p>
+                    <textarea class="editable-input" rows="3">ঢাকা বোর্ড ২০২৩: একটি সিস্টেমে 500J তাপ সরবরাহ করা হলো...</textarea>
+                    
+                    <!-- Image Upload Preview Slot -->
+                    <div class="readonly-text" style="margin-top: 10px; padding: 20px; border: 2px dashed #cbd5e1; text-align: center; color: #64748b;">[Image Placeholder - Board Question Graph]</div>
+                    <input type="file" class="editable-input" accept="image/*" style="margin-top: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <button class="add-section-btn" onclick="addNewSection()">+ Add New Topic/Sub-topic</button>
+    </div>
+
+    <script>
+        // Toggle between Edit Mode and View Mode
+        function toggleEditMode() {
+            const container = document.getElementById('lecture-paper');
+            container.classList.toggle('edit-mode');
+            
+            // Re-render MathJax when returning to view mode
+            if(!container.classList.contains('edit-mode')){
+                syncInputsToText();
+                MathJax.typesetPromise();
+            }
+        }
+
+        // Sync typed input to the display text
+        function syncInputsToText() {
+            const inputs = document.querySelectorAll('.editable-input');
+            inputs.forEach(input => {
+                const textSpan = input.previousElementSibling;
+                if(textSpan && textSpan.classList.contains('readonly-text')) {
+                    if(input.tagName === 'TEXTAREA' || input.type === 'text') {
+                        textSpan.innerHTML = input.value.replace(/\n/g, '<br>');
+                    }
+                }
+            });
+        }
+
+        // Add a completely new dynamic section
+        function addNewSection() {
+            const wrapper = document.getElementById('dynamic-sections');
+            const newSection = document.createElement('div');
+            newSection.className = 'section-box';
+            newSection.innerHTML = `
+                <div class="section-title">
+                    <span class="readonly-text">New Section Title</span>
+                    <input type="text" class="editable-input" value="New Section Title">
+                </div>
+                <div class="section-content">
+                    <p class="readonly-text">Type your content, add images, or write math equations like $$ E = mc^2 $$</p>
+                    <textarea class="editable-input" rows="4">Type your content, add images, or write math equations like $$ E = mc^2 $$</textarea>
+                    <input type="file" class="editable-input" accept="image/*" style="margin-top: 10px;">
+                </div>
+            `;
+            wrapper.appendChild(newSection);
+        }
+
+        // Generate PDF using html2pdf.js
+        function downloadPDF() {
+            const element = document.getElementById('lecture-paper');
+            const opt = {
+                margin:       [0.5, 0.5, 0.5, 0.5],
+                filename:     'GTA_Lecture_Sheet.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
